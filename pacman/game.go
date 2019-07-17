@@ -10,23 +10,21 @@ type Game struct {
 // NewGame is a Game constructor
 func NewGame() *Game {
 	g := &Game{}
+	g.scene = newScene(nil)
 	return g
 }
 
 // ScreenWidth returns the game screen width
 func (g *Game) ScreenWidth() int {
-	return 320
+	return g.scene.screenWidth()
 }
 
 // ScreenHight returns the game screen height
 func (g *Game) ScreenHeight() int {
-	return 240
+	return g.scene.screenHeight()
 }
 
 // Update updates the screen
 func (g *Game) Update(screen *ebiten.Image) error {
-	if g.scene == nil {
-		g.scene = newScene()
-	}
 	return g.scene.update(screen)
 }
