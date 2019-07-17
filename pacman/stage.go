@@ -4,7 +4,7 @@ type stage struct {
 	matrix []string
 }
 
-var stage1 = stage {
+var stage1 = stage{
 	[]string{
 		"3888888884888888885",
 		"gqrrrrrrrgrrrrrrrqg",

@@ -2,12 +2,13 @@ package pacman
 
 const (
 	backgroundImageSize = 100
-	screenWidth = backgroundImageSize * 7
-	screenHeight = backgroundImageSize * 7
-	stageBlocSize = 32
+	screenWidth         = backgroundImageSize * 7
+	screenHeight        = backgroundImageSize * 7
+	stageBlocSize       = 32
 )
 
 type elem int
+
 const (
 	w0 elem = iota
 	w1
