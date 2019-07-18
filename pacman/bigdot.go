@@ -12,6 +12,7 @@ import (
 type bigDotManager struct {
 	dots   *list.List
 	images [2]*ebiten.Image
+	count  int
 }
 
 func newBigDotManager() *bigDotManager {
@@ -38,12 +39,19 @@ func (b *bigDotManager) add(y, x int) {
 }
 
 func (b *bigDotManager) draw(sc *ebiten.Image) {
+	b.count++
+	var img *ebiten.Image
+	if b.count%10 == 0 {
+		img = b.images[1]
+	} else {
+		img = b.images[0]
+	}
 	for e := b.dots.Front(); e != nil; e = e.Next() {
 		d := e.Value.(pos)
 		x := float64(d.x * stageBlocSize)
 		y := float64(d.y * stageBlocSize)
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(x, y)
-		sc.DrawImage(b.images[0], op)
+		sc.DrawImage(img, op)
 	}
 }
