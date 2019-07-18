@@ -129,10 +129,11 @@ func (s *scene) loadImages() {
 	handleError(err)
 }
 
-func (s *scene) update(screen *ebiten.Image) error {
+func (s *scene) update(screen *ebiten.Image, in input) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
+	s.player.move(s.matrix, in)
 	screen.Clear()
 	screen.DrawImage(s.wallSurface, nil)
 	s.dotManager.draw(screen)
