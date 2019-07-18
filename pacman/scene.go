@@ -16,6 +16,7 @@ type scene struct {
 	bigDotManager *bigDotManager
 	player        *player
 	ghostManager  *ghostManager
+	textManager   *textManager
 }
 
 func newScene(st *stage) *scene {
@@ -28,6 +29,9 @@ func newScene(st *stage) *scene {
 	s.dotManager = newDotManager()
 	s.bigDotManager = newBigDotManager()
 	s.ghostManager = newGhostManager()
+	h := len(s.stage.matrix)
+	w := len(s.stage.matrix[0])
+	s.textManager = newTextManager(w*stageBlocSize, h*stageBlocSize)
 	s.loadImages()
 	s.createStage()
 	s.buildWallSurface()
@@ -75,7 +79,8 @@ func (s *scene) screenWidth() int {
 
 func (s *scene) screenHeight() int {
 	h := len(s.stage.matrix)
-	return h * stageBlocSize
+	sizeH := ((h*stageBlocSize)/backgroundImageSize + 2) * backgroundImageSize
+	return sizeH
 }
 
 func (s *scene) buildWallSurface() {
@@ -134,5 +139,6 @@ func (s *scene) update(screen *ebiten.Image) error {
 	s.bigDotManager.draw(screen)
 	s.player.draw(screen)
 	s.ghostManager.draw(screen)
+	s.textManager.draw(screen, 0, 1, s.player.images[1])
 	return nil
 }
