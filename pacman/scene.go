@@ -2,17 +2,18 @@ package pacman
 
 import (
 	"bytes"
-	"image"
-
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
+	"image"
 )
 
 type scene struct {
-	matrix      [][]elem
-	wallSurface *ebiten.Image
-	images      map[elem]*ebiten.Image
-	stage       *stage
+	matrix        [][]elem
+	wallSurface   *ebiten.Image
+	images        map[elem]*ebiten.Image
+	stage         *stage
+	dotManager    *dotManager    // new dot
+	bigDotManager *bigDotManager // new big dot
 }
 
 func newScene(st *stage) *scene {
@@ -22,6 +23,8 @@ func newScene(st *stage) *scene {
 		s.stage = defaultStage
 	}
 	s.images = make(map[elem]*ebiten.Image)
+	s.dotManager = newDotManager()       // new dot
+	s.bigDotManager = newBigDotManager() // new big dot
 	s.loadImages()
 	s.createStage()
 	s.buildWallSurface()
@@ -40,6 +43,14 @@ func (s *scene) createStage() {
 				s.matrix[i][j] = elem(c)
 			} else {
 				s.matrix[i][j] = elem(s.stage.matrix[i][j] - 'a' + 10)
+			}
+
+			// new dot & big dot
+			switch s.matrix[i][j] {
+			case dotElem:
+				s.dotManager.add(i, j)
+			case bigDotElem:
+				s.bigDotManager.add(i, j)
 			}
 		}
 	}
@@ -107,5 +118,7 @@ func (s *scene) update(screen *ebiten.Image) error {
 	}
 	screen.Clear()
 	screen.DrawImage(s.wallSurface, nil)
+	s.dotManager.draw(screen)    // new draw dot
+	s.bigDotManager.draw(screen) // new draw big dot
 	return nil
 }

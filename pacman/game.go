@@ -7,6 +7,10 @@ type Game struct {
 	scene *scene
 }
 
+type pos struct {
+	y, x int
+}
+
 // NewGame is a Game constructor
 func NewGame() *Game {
 	g := &Game{}
