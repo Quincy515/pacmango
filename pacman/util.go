@@ -38,3 +38,18 @@ func handleError(e error) {
 		panic(e)
 	}
 }
+
+func oppDir(d input) input {
+	switch d {
+	case up:
+		return down
+	case right:
+		return left
+	case down:
+		return up
+	case left:
+		return right
+	default:
+		return 0
+	}
+}

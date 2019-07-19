@@ -22,6 +22,8 @@ func newPlayer(y, x int) *player {
 	p := &player{}
 	p.loadImages()
 	p.curPos = pos{y, x}
+	p.prvPos = pos{y, x}
+	p.nxtPos = pos{y, x}
 	return p
 }
 

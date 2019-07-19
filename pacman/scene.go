@@ -134,6 +134,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 		return nil
 	}
 	s.player.move(s.matrix, in)
+	s.ghostManager.move(s.matrix, s.player.curPos)
 	screen.Clear()
 	screen.DrawImage(s.wallSurface, nil)
 	s.dotManager.draw(screen)

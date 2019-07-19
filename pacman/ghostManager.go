@@ -44,6 +44,16 @@ func (gm *ghostManager) draw(screen *ebiten.Image) {
 	}
 }
 
+func (gm *ghostManager) move(m [][]elem, pac pos) {
+	for i := 0; i < len(gm.ghosts); i++ {
+		g := gm.ghosts[i]
+		if !g.isMoving() {
+			g.findNextMove(m, pac)
+		}
+		g.move()
+	}
+}
+
 func loadGhostImages(g [8][]byte) [8]*ebiten.Image {
 	var arr [8]*ebiten.Image
 	for i := 0; i < 8; i++ {
