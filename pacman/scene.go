@@ -17,6 +17,7 @@ type scene struct {
 	player        *player
 	ghostManager  *ghostManager
 	textManager   *textManager
+	fruitManager  *fruitManager
 }
 
 func newScene(st *stage) *scene {
@@ -59,6 +60,8 @@ func (s *scene) createStage() {
 				s.bigDotManager.add(i, j)
 			case playerElem:
 				s.player = newPlayer(i, j)
+			case fruitElem:
+				s.fruitManager = newFruitManager(float64(j*stageBlocSize), float64(i*stageBlocSize))
 			case blinkyElem:
 				s.ghostManager.addGhost(i, j, blinkyElem)
 			case inkyElem:
@@ -140,6 +143,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.dotManager.draw(screen)
 	s.bigDotManager.draw(screen)
 	s.player.draw(screen)
+	s.fruitManager.draw(screen)
 	s.ghostManager.draw(screen)
 	s.textManager.draw(screen, 0, 1, s.player.images[1])
 	return nil
