@@ -132,12 +132,28 @@ func (s *scene) loadImages() {
 	handleError(err)
 }
 
+func (s *scene) move(in input) {
+	s.ghostManager.move(s.matrix, s.player.curPos)
+	s.player.move(s.matrix, in)
+}
+
+func (s *scene) detectCollision() {
+	// collision pacman-dot
+	s.dotManager.detectCollision(s.matrix, s.player.curPos, s.afterPacmanDotCollision)
+}
+
+func (s *scene) afterPacmanDotCollision() {
+	s.player.score += 10
+	s.dotManager.delete(s.player.curPos)
+	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
+}
+
 func (s *scene) update(screen *ebiten.Image, in input) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
-	s.player.move(s.matrix, in)
-	s.ghostManager.move(s.matrix, s.player.curPos)
+	s.move(in)
+	s.detectCollision()
 	screen.Clear()
 	screen.DrawImage(s.wallSurface, nil)
 	s.dotManager.draw(screen)
@@ -145,6 +161,6 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.player.draw(screen)
 	s.fruitManager.draw(screen)
 	s.ghostManager.draw(screen)
-	s.textManager.draw(screen, 0, 1, s.player.images[1])
+	s.textManager.draw(screen, s.player.score, 1, s.player.images[1])
 	return nil
 }

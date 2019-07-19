@@ -16,6 +16,7 @@ type player struct {
 	stepsLength            pos
 	steps                  int
 	dir                    input // direction
+	score                  int
 }
 
 func newPlayer(y, x int) *player {
