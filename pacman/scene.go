@@ -162,6 +162,7 @@ func (s *scene) afterPacmanBigDotCollision() {
 	s.bigDotManager.delete(s.player.curPos)
 	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
 	s.ghostManager.makeVulnerable()
+	s.sounds.playWail()
 }
 
 func (s *scene) afterPacmanFruitCollision() {
