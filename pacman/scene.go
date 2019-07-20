@@ -16,6 +16,8 @@ type scene struct {
 	ghostManager  *ghostManager
 	textManager   *textManager
 	fruitManager  *fruitManager
+	lives         int
+	pointManager  *pointManager
 }
 
 func newScene(st *stage) *scene {
@@ -24,10 +26,12 @@ func newScene(st *stage) *scene {
 	if s.stage == nil {
 		s.stage = defaultStage
 	}
+	s.lives = s.stage.lives
 	s.images = make(map[elem]*ebiten.Image)
 	s.dotManager = newDotManager()
 	s.bigDotManager = newBigDotManager()
 	s.ghostManager = newGhostManager()
+	s.pointManager = newPointManage()
 	h := len(s.stage.matrix)
 	w := len(s.stage.matrix[0])
 	s.textManager = newTextManager(w*stageBlocSize, h*stageBlocSize)
@@ -130,14 +134,28 @@ func (s *scene) move(in input) {
 }
 
 func (s *scene) detectCollision() {
+	y, x := s.player.screenPos()
+
 	// collision pacman-dot
 	s.dotManager.detectCollision(s.matrix, s.player.curPos, s.afterPacmanDotCollision)
+	// collision pacman-fruit
+	s.fruitManager.detectCollision(y, x, s.afterPacmanFruitCollision)
 }
 
 func (s *scene) afterPacmanDotCollision() {
 	s.player.score += 10
 	s.dotManager.delete(s.player.curPos)
 	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
+}
+
+func (s *scene) afterPacmanFruitCollision() {
+	y, x := s.player.screenPos()
+	s.player.score += 100
+	s.pointManager.show(0, x, y)
+	s.lives++
+	if s.lives > s.stage.maxLives {
+		s.lives = s.stage.maxLives
+	}
 }
 
 func (s *scene) update(screen *ebiten.Image, in input) error {
@@ -153,6 +171,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.player.draw(screen)
 	s.fruitManager.draw(screen)
 	s.ghostManager.draw(screen)
-	s.textManager.draw(screen, s.player.score, 1, s.player.images[1])
+	s.pointManager.draw(screen)
+	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1])
 	return nil
 }

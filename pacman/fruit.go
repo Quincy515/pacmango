@@ -3,6 +3,7 @@ package pacman
 import (
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
+	"math"
 )
 
 type fruitManager struct {
@@ -68,4 +69,18 @@ func (fm *fruitManager) draw(screen *ebiten.Image) {
 	op.GeoM.Translate(fm.x, fm.y)
 	op.ColorM.Scale(1, 1, 1, fm.alpha)
 	screen.DrawImage(fm.fruits[fm.curr], op)
+}
+
+func (fm *fruitManager) detectCollision(pY, pX float64, cb func()) {
+	if !fm.visible {
+		return
+	}
+	if math.Abs(pY-fm.y) < 32 && math.Abs(pX-fm.x) < 32 {
+		fm.show = true
+		fm.count = -900
+		fm.visible = false
+		fm.alpha = 0
+		fm.curr = (fm.curr + 1) % len(fm.fruits)
+		cb()
+	}
 }

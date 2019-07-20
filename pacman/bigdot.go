@@ -1,10 +1,7 @@
 package pacman
 
 import (
-	"bytes"
 	"container/list"
-	"image"
-
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
 )
@@ -23,15 +20,8 @@ func newBigDotManager() *bigDotManager {
 }
 
 func (b *bigDotManager) loadImages() {
-	img1, _, err := image.Decode(bytes.NewReader(pacimages.BigDot1_png))
-	handleError(err)
-	b.images[0], err = ebiten.NewImageFromImage(img1, ebiten.FilterDefault)
-	handleError(err)
-
-	img2, _, err := image.Decode(bytes.NewReader(pacimages.BigDot2_png))
-	handleError(err)
-	b.images[1], err = ebiten.NewImageFromImage(img2, ebiten.FilterDefault)
-	handleError(err)
+	b.images[0] = loadImage(pacimages.BigDot1_png)
+	b.images[1] = loadImage(pacimages.BigDot2_png)
 }
 
 func (b *bigDotManager) add(y, x int) {

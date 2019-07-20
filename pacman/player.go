@@ -132,3 +132,9 @@ func (p *player) updateImage(openMouth bool) {
 		}
 	}
 }
+
+func (p *player) screenPos() (y, x float64) {
+	x = float64(p.curPos.x*stageBlocSize + p.stepsLength.x)
+	y = float64(p.curPos.y*stageBlocSize + p.stepsLength.y)
+	return
+}

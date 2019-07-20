@@ -1,7 +1,9 @@
 package pacman
 
 type stage struct {
-	matrix []string
+	matrix   []string
+	lives    int
+	maxLives int
 }
 
 var stage1 = stage{
@@ -24,6 +26,8 @@ var stage1 = stage{
 		"gqrrrrrr385rrrrrrqg",
 		"l8888888m8m8888888n",
 	},
+	1,
+	2,
 }
 
 var defaultStage = &stage1
