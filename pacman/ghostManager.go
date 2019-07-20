@@ -1,9 +1,6 @@
 package pacman
 
 import (
-	"bytes"
-	"image"
-
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
 )
@@ -26,7 +23,7 @@ func (gm *ghostManager) loadImages() {
 	gm.images[clydeElem] = loadGhostImages(pacimages.ClydeImages)
 	gm.images[inkyElem] = loadGhostImages(pacimages.InkyImages)
 	gm.images[pinkyElem] = loadGhostImages(pacimages.PinkyImages)
-	gm.vulnerabilityImages = loadVulnerabilityImages()
+	copy(gm.vulnerabilityImages[:], loadImages(pacimages.VulnerabilityImages[:]))
 }
 
 func (gm *ghostManager) addGhost(y, x int, e elem) {
@@ -56,22 +53,6 @@ func (gm *ghostManager) move(m [][]elem, pac pos) {
 
 func loadGhostImages(g [8][]byte) [8]*ebiten.Image {
 	var arr [8]*ebiten.Image
-	for i := 0; i < 8; i++ {
-		img, _, err := image.Decode(bytes.NewReader(g[i]))
-		handleError(err)
-		arr[i], err = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-		handleError(err)
-	}
-	return arr
-}
-
-func loadVulnerabilityImages() [5]*ebiten.Image {
-	var arr [5]*ebiten.Image
-	for i := 0; i < 5; i++ {
-		img, _, err := image.Decode(bytes.NewReader(pacimages.VulnerabilityImages[i]))
-		handleError(err)
-		arr[i], err = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-		handleError(err)
-	}
+	copy(arr[:], loadImages(g[:]))
 	return arr
 }

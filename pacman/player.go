@@ -1,9 +1,6 @@
 package pacman
 
 import (
-	"bytes"
-	"image"
-
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
 )
@@ -29,12 +26,7 @@ func newPlayer(y, x int) *player {
 }
 
 func (p *player) loadImages() {
-	for i := 0; i < 8; i++ {
-		img, _, err := image.Decode(bytes.NewReader(pacimages.PlayerImages[i]))
-		handleError(err)
-		p.images[i], err = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-		handleError(err)
-	}
+	copy(p.images[:], loadImages(pacimages.PlayerImages[:]))
 }
 
 func (p *player) image() *ebiten.Image {

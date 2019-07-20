@@ -1,9 +1,6 @@
 package pacman
 
 import (
-	"bytes"
-	"image"
-
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
 )
@@ -30,13 +27,8 @@ func newFruitManager(x, y float64) *fruitManager {
 	return fm
 }
 
-func (fm *fruitManager) loadImages() {
-	for i := 0; i < len(fm.fruits); i++ {
-		img, _, err := image.Decode(bytes.NewReader(pacimages.FruitImages[i]))
-		handleError(err)
-		fm.fruits[i], err = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-		handleError(err)
-	}
+func (fm *fruitManager) loadImages() { // use copy() convert array & slice
+	copy(fm.fruits[:], loadImages(pacimages.FruitImages[:])) //fruits[:]array to slice
 }
 
 func (fm *fruitManager) update() {

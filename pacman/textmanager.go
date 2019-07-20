@@ -57,16 +57,16 @@ func newTextManager(w, h int) *textManager {
 	return tm
 }
 
-func (tm *textManager) draw(screen *ebiten.Image, score, live int, pac *ebiten.Image) {
+func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.Image) {
 	text.Draw(screen, keyText, tm.titleFF, tm.keyX, tm.titleY, gold)
 	text.Draw(screen, rText, tm.bodyFF, tm.keyX, tm.titleY+stageBlocSize, gold)
 	text.Draw(screen, hText, tm.bodyFF, tm.keyX, tm.titleY+2*stageBlocSize, gold)
 	text.Draw(screen, moveText, tm.bodyFF, tm.keyX, tm.titleY+3*stageBlocSize, gold)
 
 	text.Draw(screen, liveText, tm.titleFF, tm.liveX, tm.titleY, gold)
-	for i := live; 0 < i; i-- {
+	for i := lives; 0 < i; i-- {
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(tm.liveX+i*stageBlocSize), float64(tm.titleY+stageBlocSize))
+		op.GeoM.Translate(float64(tm.liveX+(lives-i)*stageBlocSize), float64(tm.titleY+stageBlocSize))
 		screen.DrawImage(pac, op)
 	}
 

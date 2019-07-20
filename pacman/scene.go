@@ -1,10 +1,8 @@
 package pacman
 
 import (
-	"bytes"
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
-	"image"
 )
 
 type scene struct {
@@ -120,16 +118,10 @@ func (s *scene) buildWallSurface() {
 
 func (s *scene) loadImages() {
 	for i := w0; i <= w24; i++ {
-		img, _, err := image.Decode(bytes.NewReader(pacimages.WallImages[i]))
-		handleError(err)
-		s.images[i], err = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-		handleError(err)
+		s.images[i] = loadImage(pacimages.WallImages[i])
 	}
 
-	img, _, err := image.Decode(bytes.NewReader(pacimages.Background_png))
-	handleError(err)
-	s.images[backgroundElem], err = ebiten.NewImageFromImage(img, ebiten.FilterDefault)
-	handleError(err)
+	s.images[backgroundElem] = loadImage(pacimages.Background_png)
 }
 
 func (s *scene) move(in input) {
