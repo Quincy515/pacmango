@@ -19,6 +19,7 @@ type scene struct {
 	lives            int
 	pointManager     *pointManager
 	explosionManager *explosionManager
+	sounds           *sounds
 }
 
 func newScene(st *stage) *scene {
@@ -34,6 +35,7 @@ func newScene(st *stage) *scene {
 	s.bigDotManager = newBigDotManager()
 	s.ghostManager = newGhostManager()
 	s.pointManager = newPointManage()
+	s.sounds = newSounds()
 	h := len(s.stage.matrix)
 	w := len(s.stage.matrix[0])
 	s.textManager = newTextManager(w*stageBlocSize, h*stageBlocSize)
@@ -214,5 +216,6 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.pointManager.draw(screen)
 	s.explosionManager.draw(screen)
 	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1])
+	s.sounds.playSiren()
 	return nil
 }
