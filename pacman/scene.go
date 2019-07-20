@@ -168,6 +168,7 @@ func (s *scene) afterPacmanFruitCollision() {
 	y, x := s.player.screenPos()
 	s.player.score += 100
 	s.pointManager.show(0, x, y)
+	s.sounds.playEatFruit()
 	s.lives++
 	if s.lives > s.stage.maxLives {
 		s.lives = s.stage.maxLives

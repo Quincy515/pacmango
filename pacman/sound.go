@@ -8,8 +8,9 @@ import (
 )
 
 type sounds struct {
-	audioContext *audio.Context
-	sirenPlayer  *audio.Player
+	audioContext   *audio.Context
+	sirenPlayer    *audio.Player
+	eatFruitPlayer *audio.Player
 }
 
 const (
@@ -26,8 +27,10 @@ func newSounds() *sounds {
 	}
 
 	s.sirenPlayer = s.newPlayer(pacsounds.Siren_wav)
+	s.eatFruitPlayer = s.newPlayer(pacsounds.EatFruit_wav)
 
 	s.sirenPlayer.SetVolume(0.2)
+	s.eatFruitPlayer.SetVolume(0.1)
 	return s
 }
 
@@ -51,5 +54,12 @@ func (s *sounds) playSiren() {
 	if !s.sirenPlayer.IsPlaying() {
 		s.sirenPlayer.Rewind()
 		s.sirenPlayer.Play()
+	}
+}
+
+func (s *sounds) playEatFruit() {
+	if !s.eatFruitPlayer.IsPlaying() {
+		s.eatFruitPlayer.Rewind()
+		s.eatFruitPlayer.Play()
 	}
 }
