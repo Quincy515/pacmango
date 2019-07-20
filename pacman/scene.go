@@ -140,12 +140,21 @@ func (s *scene) detectCollision() {
 	s.dotManager.detectCollision(s.matrix, s.player.curPos, s.afterPacmanDotCollision)
 	// collision pacman-fruit
 	s.fruitManager.detectCollision(y, x, s.afterPacmanFruitCollision)
+	// collision pacman-bigdot
+	s.bigDotManager.detectCollision(s.matrix, s.player.curPos, s.afterPacmanBigDotCollision)
 }
 
 func (s *scene) afterPacmanDotCollision() {
 	s.player.score += 10
 	s.dotManager.delete(s.player.curPos)
 	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
+}
+
+func (s *scene) afterPacmanBigDotCollision() {
+	s.player.score += 50
+	s.bigDotManager.delete(s.player.curPos)
+	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
+	s.ghostManager.makeVulnerable()
 }
 
 func (s *scene) afterPacmanFruitCollision() {

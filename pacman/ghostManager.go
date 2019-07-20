@@ -56,3 +56,9 @@ func loadGhostImages(g [8][]byte) [8]*ebiten.Image {
 	copy(arr[:], loadImages(g[:]))
 	return arr
 }
+
+func (gm *ghostManager) makeVulnerable() {
+	for i := 0; i < len(gm.ghosts); i++ {
+		gm.ghosts[i].makeVulnerable()
+	}
+}
