@@ -6,18 +6,19 @@ import (
 )
 
 type scene struct {
-	matrix        [][]elem
-	wallSurface   *ebiten.Image
-	images        map[elem]*ebiten.Image
-	stage         *stage
-	dotManager    *dotManager
-	bigDotManager *bigDotManager
-	player        *player
-	ghostManager  *ghostManager
-	textManager   *textManager
-	fruitManager  *fruitManager
-	lives         int
-	pointManager  *pointManager
+	matrix           [][]elem
+	wallSurface      *ebiten.Image
+	images           map[elem]*ebiten.Image
+	stage            *stage
+	dotManager       *dotManager
+	bigDotManager    *bigDotManager
+	player           *player
+	ghostManager     *ghostManager
+	textManager      *textManager
+	fruitManager     *fruitManager
+	lives            int
+	pointManager     *pointManager
+	explosionManager *explosionManager
 }
 
 func newScene(st *stage) *scene {
@@ -28,6 +29,7 @@ func newScene(st *stage) *scene {
 	}
 	s.lives = s.stage.lives
 	s.images = make(map[elem]*ebiten.Image)
+	s.explosionManager = newExplosionManager()
 	s.dotManager = newDotManager()
 	s.bigDotManager = newBigDotManager()
 	s.ghostManager = newGhostManager()
@@ -129,8 +131,9 @@ func (s *scene) loadImages() {
 }
 
 func (s *scene) move(in input) {
+	s.explosionManager.move()
 	s.ghostManager.move(s.matrix, s.player.curPos)
-	s.player.move(s.matrix, in)
+	s.player.move(s.matrix, in, s.afterPacmanExplosion)
 }
 
 func (s *scene) detectCollision() {
@@ -142,6 +145,8 @@ func (s *scene) detectCollision() {
 	s.fruitManager.detectCollision(y, x, s.afterPacmanFruitCollision)
 	// collision pacman-bigdot
 	s.bigDotManager.detectCollision(s.matrix, s.player.curPos, s.afterPacmanBigDotCollision)
+	// collision pacman-ghost
+	s.ghostManager.detectCollision(y, x, s.afterPacmanGhostCollision)
 }
 
 func (s *scene) afterPacmanDotCollision() {
@@ -167,6 +172,21 @@ func (s *scene) afterPacmanFruitCollision() {
 	}
 }
 
+func (s *scene) afterPacmanGhostCollision(vulnerable bool, y, x float64) {
+	if vulnerable {
+		// TODO: handle this part
+	} else {
+		s.player.explode()
+	}
+}
+
+func (s *scene) afterPacmanExplosion() {
+	s.ghostManager.reset(s.explosionManager)
+	x, y := s.textManager.livesPos(s.lives)
+	s.explosionManager.addExplosion(pacimages.PacParticle_png, x-16, y+16)
+	s.lives--
+}
+
 func (s *scene) update(screen *ebiten.Image, in input) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
@@ -181,6 +201,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.fruitManager.draw(screen)
 	s.ghostManager.draw(screen)
 	s.pointManager.draw(screen)
+	s.explosionManager.draw(screen)
 	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1])
 	return nil
 }

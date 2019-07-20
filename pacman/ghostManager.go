@@ -3,6 +3,7 @@ package pacman
 import (
 	"github.com/hajimehoshi/ebiten"
 	pacimages "github.com/kgosse/pacmanresources/images"
+	"math"
 )
 
 type ghostManager struct {
@@ -48,6 +49,28 @@ func (gm *ghostManager) move(m [][]elem, pac pos) {
 			g.findNextMove(m, pac)
 		}
 		g.move()
+	}
+}
+
+func (gm *ghostManager) detectCollision(pY, pX float64, cb func(bool, float64, float64)) {
+	for i := 0; i < len(gm.ghosts); i++ {
+		g := gm.ghosts[i]
+		gY, gX := g.screenPos()
+		if math.Abs(pY-gY) < 32 && math.Abs(pX-gX) < 32 {
+			if !g.isVulnerable() {
+				cb(false, 0, 0)
+				return
+			}
+		}
+	}
+}
+
+func (gm *ghostManager) reset(em *explosionManager) {
+	for i := 0; i < len(gm.ghosts); i++ {
+		g := gm.ghosts[i]
+		y, x := g.screenPos()
+		em.addExplosion(pacimages.PacParticle_png, x, y)
+		g.reset()
 	}
 }
 

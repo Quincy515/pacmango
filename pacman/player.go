@@ -9,19 +9,24 @@ type player struct {
 	images                 [8]*ebiten.Image
 	currentImg             int
 	prvPos, curPos, nxtPos pos
+	initialPos             pos
 	speed                  int
 	stepsLength            pos
 	steps                  int
 	dir                    input // direction
 	score                  int
+	ctExplosion            int
+	pm                     *particleManager
 }
 
 func newPlayer(y, x int) *player {
 	p := &player{}
 	p.loadImages()
+	p.pm = newParticleManager(pacimages.PacParticle_png, 0, 0)
 	p.curPos = pos{y, x}
 	p.prvPos = pos{y, x}
 	p.nxtPos = pos{y, x}
+	p.initialPos = pos{y, x}
 	return p
 }
 
@@ -34,14 +39,29 @@ func (p *player) image() *ebiten.Image {
 }
 
 func (p *player) draw(screen *ebiten.Image) {
-	x := float64(p.curPos.x*stageBlocSize + p.stepsLength.x) // new
-	y := float64(p.curPos.y*stageBlocSize + p.stepsLength.y) // new
+	if p.isExploding() {
+		p.pm.draw(screen)
+		return
+	}
+	x := float64(p.curPos.x*stageBlocSize + p.stepsLength.x)
+	y := float64(p.curPos.y*stageBlocSize + p.stepsLength.y)
 	op := &ebiten.DrawImageOptions{}
 	op.GeoM.Translate(x, y)
 	screen.DrawImage(p.image(), op)
 }
 
-func (p *player) move(m [][]elem, dir input) {
+func (p *player) move(m [][]elem, dir input, cb func()) {
+	// explosion
+	if p.isExploding() {
+		p.ctExplosion++
+		p.pm.move()
+		// end explosion
+		if p.ctExplosion == 90 {
+			p.reset()
+			cb()
+		}
+		return
+	}
 	// not moving and no direction
 	if !p.isMoving() && dir == 0 {
 		return
@@ -82,6 +102,14 @@ func (p *player) move(m [][]elem, dir input) {
 	if p.steps >= 7 {
 		p.endMove()
 	}
+}
+
+func (p *player) reset() {
+	p.curPos, p.prvPos, p.nxtPos = p.initialPos, p.initialPos, p.initialPos
+	p.currentImg = 0
+	p.ctExplosion = 0
+	p.stepsLength = pos{0, 0}
+	p.steps = 0
 }
 
 func (p *player) isMoving() bool {
@@ -137,4 +165,23 @@ func (p *player) screenPos() (y, x float64) {
 	x = float64(p.curPos.x*stageBlocSize + p.stepsLength.x)
 	y = float64(p.curPos.y*stageBlocSize + p.stepsLength.y)
 	return
+}
+
+func (p *player) explode() {
+	if p.isExploding() {
+		return
+	}
+	x := float64(p.curPos.x*stageBlocSize + p.stepsLength.x)
+	y := float64(p.curPos.y*stageBlocSize + p.stepsLength.y)
+	p.curPos.x = 0
+	p.curPos.y = 0
+	p.pm.reset(x, y)
+	p.ctExplosion = 1
+}
+
+func (p *player) isExploding() bool {
+	if p.ctExplosion > 0 {
+		return true
+	}
+	return false
 }

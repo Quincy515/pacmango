@@ -10,6 +10,7 @@ type ghost struct {
 	kind                   elem
 	currentImg             int
 	prvPos, curPos, nxtPos pos
+	initialPos             pos
 	speed                  int
 	stepsLength            pos
 	steps                  int
@@ -28,6 +29,7 @@ func newGhost(y, x int, k elem) *ghost {
 		prvPos:      pos{y, x},
 		curPos:      pos{y, x},
 		nxtPos:      pos{y, x},
+		initialPos:  pos{y, x},
 		stepsLength: pos{},
 		speed:       4,
 		vision:      getVision(k),
@@ -254,4 +256,18 @@ func (g *ghost) localisePlayer(m [][]elem, pac pos) input {
 
 func (g *ghost) makeVulnerable() {
 	g.ctVulnerable = 1
+}
+
+func (g *ghost) screenPos() (y, x float64) {
+	x = float64(g.curPos.x*stageBlocSize + g.stepsLength.x)
+	y = float64(g.curPos.y*stageBlocSize + g.stepsLength.y)
+	return
+}
+
+func (g *ghost) reset() {
+	g.prvPos, g.curPos, g.nxtPos = g.initialPos, g.initialPos, g.initialPos
+	g.stepsLength = pos{}
+	g.currentImg = 0
+	g.dir = 0
+	g.steps = 0
 }

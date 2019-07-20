@@ -16,7 +16,7 @@ const (
 	keyText     = "KEYS"
 	rText       = "R: Restart"
 	hText       = "hjkl: Move"
-	liveText    = "LIVES"
+	livesText   = "LIVES"
 	scoreText   = "SCORE"
 	restartText = "R: Restart"
 	moveText    = "←↓↑→: Move"
@@ -30,10 +30,10 @@ var (
 )
 
 type textManager struct {
-	titleFF             font.Face
-	bodyFF              font.Face
-	keyX, liveX, scoreX int
-	titleY              int
+	titleFF              font.Face
+	bodyFF               font.Face
+	keyX, livesX, scoreX int
+	titleY               int
 }
 
 func newTextManager(w, h int) *textManager {
@@ -51,7 +51,7 @@ func newTextManager(w, h int) *textManager {
 
 	tm.scoreX = w - 5*stageBlocSize
 	tm.keyX = 20
-	tm.liveX = w/2 - 2*stageBlocSize
+	tm.livesX = w/2 - 2*stageBlocSize
 	tm.titleY = h + 25
 
 	return tm
@@ -63,13 +63,19 @@ func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.
 	text.Draw(screen, hText, tm.bodyFF, tm.keyX, tm.titleY+2*stageBlocSize, gold)
 	text.Draw(screen, moveText, tm.bodyFF, tm.keyX, tm.titleY+3*stageBlocSize, gold)
 
-	text.Draw(screen, liveText, tm.titleFF, tm.liveX, tm.titleY, gold)
+	text.Draw(screen, livesText, tm.titleFF, tm.livesX, tm.titleY, gold)
 	for i := lives; 0 < i; i-- {
 		op := &ebiten.DrawImageOptions{}
-		op.GeoM.Translate(float64(tm.liveX+(lives-i)*stageBlocSize), float64(tm.titleY+stageBlocSize))
+		op.GeoM.Translate(float64(tm.livesX+(lives-i)*stageBlocSize), float64(tm.titleY+stageBlocSize))
 		screen.DrawImage(pac, op)
 	}
 
 	text.Draw(screen, scoreText, tm.titleFF, tm.scoreX, tm.titleY, gold)
 	text.Draw(screen, strconv.Itoa(score), tm.titleFF, tm.scoreX, tm.titleY+2*stageBlocSize-9, gold)
+}
+
+func (tm *textManager) livesPos(l int) (x, y float64) {
+	x = float64(tm.livesX + l*stageBlocSize)
+	y = float64(tm.titleY + stageBlocSize)
+	return
 }
