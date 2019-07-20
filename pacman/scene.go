@@ -174,7 +174,18 @@ func (s *scene) afterPacmanFruitCollision() {
 
 func (s *scene) afterPacmanGhostCollision(vulnerable bool, y, x float64) {
 	if vulnerable {
-		// TODO: handle this part
+		s.explosionManager.addExplosion(pacimages.GhostParticle_png, x, y)
+		eaten := s.ghostManager.eaten
+		if eaten == 1 {
+			s.player.score += 200
+		} else if eaten == 2 {
+			s.player.score += 400
+		} else if eaten == 3 {
+			s.player.score += 800
+		} else {
+			s.player.score += 1600
+		}
+		s.pointManager.show(eaten, x, y)
 	} else {
 		s.player.explode()
 	}

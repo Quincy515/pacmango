@@ -58,6 +58,9 @@ func (pm *pointManager) draw(screen *ebiten.Image) {
 }
 
 func (pm *pointManager) show(i int, x, y float64) {
+	if i >= len(pm.points) {
+		i = len(pm.points) - 1
+	}
 	p := pm.points[i]
 	p.show = true
 	p.x = x

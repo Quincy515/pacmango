@@ -10,6 +10,7 @@ type ghostManager struct {
 	ghosts              []*ghost
 	images              map[elem][8]*ebiten.Image
 	vulnerabilityImages [5]*ebiten.Image
+	eaten               int
 }
 
 func newGhostManager() *ghostManager {
@@ -61,6 +62,10 @@ func (gm *ghostManager) detectCollision(pY, pX float64, cb func(bool, float64, f
 				cb(false, 0, 0)
 				return
 			}
+			gm.eaten++
+			g.makeEaten()
+			g.reset()
+			cb(true, gY, gX)
 		}
 	}
 }
@@ -81,6 +86,7 @@ func loadGhostImages(g [8][]byte) [8]*ebiten.Image {
 }
 
 func (gm *ghostManager) makeVulnerable() {
+	gm.eaten = 0
 	for i := 0; i < len(gm.ghosts); i++ {
 		gm.ghosts[i].makeVulnerable()
 	}

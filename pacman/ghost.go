@@ -18,6 +18,7 @@ type ghost struct {
 	vision                 int
 	ctVulnerable           int
 	vulnerableMove         bool
+	eaten                  bool
 }
 
 func init() {
@@ -111,6 +112,7 @@ func (g *ghost) move() {
 func (g *ghost) endVulnerability() {
 	g.vulnerableMove = false
 	g.ctVulnerable = 0
+	g.eaten = false
 }
 
 func (g *ghost) updateImage() {
@@ -156,6 +158,14 @@ func (g *ghost) updateImage() {
 			g.currentImg = 4
 		}
 	}
+}
+
+func (g *ghost) makeEaten() {
+	g.eaten = true
+}
+
+func (g *ghost) isEaten() bool {
+	return g.eaten
 }
 
 func (g *ghost) endMove() {
