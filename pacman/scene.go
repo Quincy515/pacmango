@@ -192,6 +192,7 @@ func (s *scene) afterPacmanGhostCollision(vulnerable bool, y, x float64) {
 		}
 		s.pointManager.show(eaten, x, y)
 	} else {
+		s.sounds.playDeath()
 		s.player.explode()
 	}
 }

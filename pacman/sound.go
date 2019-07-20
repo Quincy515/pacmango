@@ -13,6 +13,7 @@ type sounds struct {
 	eatFruitPlayer *audio.Player
 	wailPlayer     *audio.Player
 	eatGhostPlayer *audio.Player
+	deathPlayer    *audio.Player
 }
 
 const (
@@ -32,11 +33,13 @@ func newSounds() *sounds {
 	s.eatFruitPlayer = s.newPlayer(pacsounds.EatFruit_wav)
 	s.wailPlayer = s.newPlayer(pacsounds.Wail_wav)
 	s.eatGhostPlayer = s.newPlayer(pacsounds.EatGhost_wav)
+	s.deathPlayer = s.newPlayer(pacsounds.Death_wav)
 
 	s.sirenPlayer.SetVolume(0.2)
 	s.eatFruitPlayer.SetVolume(0.1)
 	s.wailPlayer.SetVolume(0.05)
 	s.eatGhostPlayer.SetVolume(0.05)
+	s.deathPlayer.SetVolume(0.05)
 	return s
 }
 
@@ -66,6 +69,7 @@ func (s *sounds) playSiren() {
 func (s *sounds) canPlaySiren() bool {
 	d := [...]*audio.Player{
 		s.wailPlayer,
+		s.deathPlayer,
 	}
 
 	for _, v := range d {
@@ -93,5 +97,13 @@ func (s *sounds) playEatGhost() {
 	if !s.eatGhostPlayer.IsPlaying() {
 		s.eatGhostPlayer.Rewind()
 		s.eatGhostPlayer.Play()
+	}
+}
+
+func (s *sounds) playDeath() {
+	s.sirenPlayer.Pause()
+	if !s.sirenPlayer.IsPlaying() {
+		s.deathPlayer.Rewind()
+		s.deathPlayer.Play()
 	}
 }
