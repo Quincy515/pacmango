@@ -97,7 +97,7 @@ func (g *ghost) move() {
 		g.ctVulnerable++
 		if g.steps == 16 {
 			g.endMove()
-			if g.ctVulnerable >= 392 {
+			if g.ctVulnerable >= 392 { // 392/60frame=6.5s,wail sounds 7s
 				g.endVulnerability()
 			}
 		}
