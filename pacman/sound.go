@@ -146,3 +146,17 @@ func (s *sounds) playDeath() {
 		s.deathPlayer.Play()
 	}
 }
+
+func (s *sounds) pause() {
+	d := [...]*audio.Player{
+		s.wailPlayer,
+		s.deathPlayer,
+		s.sirenPlayer,
+		s.eatGhostPlayer,
+		s.eatFruitPlayer,
+	}
+
+	for _, v := range d {
+		v.Pause()
+	}
+}

@@ -8,6 +8,7 @@ import (
 
 type bigDotManager struct {
 	dots   *list.List
+	gc     *list.List
 	images [2]*ebiten.Image
 	count  int
 }
@@ -15,6 +16,7 @@ type bigDotManager struct {
 func newBigDotManager() *bigDotManager {
 	bd := &bigDotManager{}
 	bd.dots = list.New()
+	bd.gc = list.New()
 	bd.loadImages()
 	return bd
 }
@@ -56,8 +58,22 @@ func (b *bigDotManager) delete(p pos) {
 	for e := b.dots.Front(); e != nil; e = e.Next() {
 		v := e.Value.(pos)
 		if v.x == p.x && v.y == p.y {
-			b.dots.Remove(e)
+			b.gc.PushBack(b.dots.Remove(e).(pos))
 			return
 		}
+	}
+}
+
+func (b *bigDotManager) reinit(m [][]elem) {
+	e := b.gc.Front()
+	for {
+		if e == nil {
+			break
+		}
+		v := e.Value.(pos)
+		cur := e
+		e = e.Next()
+		b.dots.PushBack(b.gc.Remove(cur))
+		m[v.y][v.x] = bigDotElem
 	}
 }

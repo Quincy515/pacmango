@@ -281,3 +281,9 @@ func (g *ghost) reset() {
 	g.dir = 0
 	g.steps = 0
 }
+
+func (g *ghost) reinit() {
+	g.reset()
+	g.speed = 4
+	g.endVulnerability()
+}

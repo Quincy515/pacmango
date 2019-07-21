@@ -14,6 +14,7 @@ const (
 	down
 	left
 	sKey
+	rKey
 )
 
 type elem int

@@ -204,6 +204,16 @@ func (s *scene) afterPacmanExplosion() {
 	s.lives--
 }
 
+func (s *scene) reinit() {
+	s.dotManager.reinit(s.matrix)
+	s.bigDotManager.reinit(s.matrix)
+	s.player.reinit()
+	s.lives = s.stage.maxLives - 1
+	s.ghostManager.reinit()
+	s.explosionManager.reinit()
+	s.sounds.pause()
+}
+
 func (s *scene) update(screen *ebiten.Image, in input) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
@@ -211,8 +221,12 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	if in == sKey {
 		s.sounds.toggleSound()
 	}
-	s.move(in)
-	s.detectCollision()
+	if in == rKey {
+		s.reinit()
+	} else {
+		s.move(in)
+		s.detectCollision()
+	}
 	screen.Clear()
 	screen.DrawImage(s.wallSurface, nil)
 	s.dotManager.draw(screen)

@@ -21,5 +21,8 @@ func keyPressed() input {
 	if inpututil.IsKeyJustPressed(ebiten.KeyS) {
 		return sKey
 	}
+	if inpututil.IsKeyJustPressed(ebiten.KeyR) {
+		return rKey
+	}
 	return 0
 }

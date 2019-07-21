@@ -185,3 +185,8 @@ func (p *player) isExploding() bool {
 	}
 	return false
 }
+
+func (p *player) reinit() {
+	p.reset()
+	p.score = 0
+}

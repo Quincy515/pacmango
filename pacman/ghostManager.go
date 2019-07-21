@@ -91,3 +91,10 @@ func (gm *ghostManager) makeVulnerable() {
 		gm.ghosts[i].makeVulnerable()
 	}
 }
+
+func (gm *ghostManager) reinit() {
+	for i := 0; i < len(gm.ghosts); i++ {
+		g := gm.ghosts[i]
+		g.reinit()
+	}
+}
