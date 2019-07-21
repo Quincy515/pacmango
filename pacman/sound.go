@@ -14,6 +14,7 @@ type sounds struct {
 	wailPlayer     *audio.Player
 	eatGhostPlayer *audio.Player
 	deathPlayer    *audio.Player
+	on             bool
 }
 
 const (
@@ -40,6 +41,7 @@ func newSounds() *sounds {
 	s.wailPlayer.SetVolume(0.05)
 	s.eatGhostPlayer.SetVolume(0.05)
 	s.deathPlayer.SetVolume(0.05)
+	s.toggleSound()
 	return s
 }
 
@@ -51,12 +53,49 @@ func (s *sounds) newPlayer(b []byte) *audio.Player {
 	return p
 }
 
+func (s *sounds) toggleSound() {
+	if s.on {
+		s.on = false
+		s.sirenPlayer.SetVolume(0)
+		s.eatFruitPlayer.SetVolume(0)
+		s.wailPlayer.SetVolume(0)
+		s.eatGhostPlayer.SetVolume(0)
+		s.deathPlayer.SetVolume(0)
+	} else {
+		s.on = true
+		s.sirenPlayer.SetVolume(0.2)
+		s.eatGhostPlayer.SetVolume(0.1)
+		s.wailPlayer.SetVolume(0.05)
+		s.eatGhostPlayer.SetVolume(0.05)
+		s.deathPlayer.SetVolume(0.05)
+	}
+}
+
+func (s *sounds) turnOff() {
+	s.on = false
+	s.sirenPlayer.SetVolume(0.2)
+	s.eatGhostPlayer.SetVolume(0.1)
+	s.wailPlayer.SetVolume(0.05)
+	s.eatGhostPlayer.SetVolume(0.05)
+	s.deathPlayer.SetVolume(0.05)
+}
+
 func (s *sounds) load(b []byte) *wav.Stream {
 	stream, err := wav.Decode(s.audioContext, audio.BytesReadSeekCloser(b))
 	if err != nil {
 		log.Fatal(err)
 	}
 	return stream
+}
+
+func (s *sounds) status() string {
+	var r string
+	if s.on {
+		r = "off"
+	} else {
+		r = "on"
+	}
+	return r
 }
 
 func (s *sounds) playSiren() {

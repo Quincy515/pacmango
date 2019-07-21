@@ -208,6 +208,9 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	if ebiten.IsDrawingSkipped() {
 		return nil
 	}
+	if in == sKey {
+		s.sounds.toggleSound()
+	}
 	s.move(in)
 	s.detectCollision()
 	screen.Clear()
@@ -219,7 +222,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.ghostManager.draw(screen)
 	s.pointManager.draw(screen)
 	s.explosionManager.draw(screen)
-	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1])
+	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1], s.sounds.status())
 	s.sounds.playSiren()
 	return nil
 }

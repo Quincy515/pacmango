@@ -1,6 +1,7 @@
 package pacman
 
 import (
+	"fmt"
 	"image/color"
 	"log"
 	"strconv"
@@ -14,13 +15,15 @@ import (
 
 const (
 	keyText     = "KEYS"
-	rText       = "R: Restart"
+	rText       = "r: Restart"
 	hText       = "hjkl: Move"
 	livesText   = "LIVES"
 	scoreText   = "SCORE"
 	restartText = "R: Restart"
 	moveText    = "←↓↑→: Move"
 	pauseText   = "P: pause"
+	soundText   = "s: sound %s"
+	studyText   = "Learn From: github.com/kgosse"
 )
 
 var (
@@ -33,6 +36,7 @@ type textManager struct {
 	titleFF              font.Face
 	bodyFF               font.Face
 	keyX, livesX, scoreX int
+	studyX               int
 	titleY               int
 }
 
@@ -52,24 +56,25 @@ func newTextManager(w, h int) *textManager {
 	tm.scoreX = w - 5*stageBlocSize
 	tm.keyX = 20
 	tm.livesX = w/2 - 2*stageBlocSize
+	tm.studyX = w/2 - 4*stageBlocSize
 	tm.titleY = h + 25
 
 	return tm
 }
 
-func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.Image) {
+func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.Image, status string) {
 	text.Draw(screen, keyText, tm.titleFF, tm.keyX, tm.titleY, gold)
 	text.Draw(screen, rText, tm.bodyFF, tm.keyX, tm.titleY+stageBlocSize, gold)
 	text.Draw(screen, hText, tm.bodyFF, tm.keyX, tm.titleY+2*stageBlocSize, gold)
 	text.Draw(screen, moveText, tm.bodyFF, tm.keyX, tm.titleY+3*stageBlocSize, gold)
-
+	text.Draw(screen, fmt.Sprintf(soundText, status), tm.bodyFF, tm.keyX, tm.titleY+4*stageBlocSize, gold)
 	text.Draw(screen, livesText, tm.titleFF, tm.livesX, tm.titleY, gold)
 	for i := lives; 0 < i; i-- {
 		op := &ebiten.DrawImageOptions{}
 		op.GeoM.Translate(float64(tm.livesX+(lives-i)*stageBlocSize), float64(tm.titleY+stageBlocSize))
 		screen.DrawImage(pac, op)
 	}
-
+	text.Draw(screen, studyText, tm.titleFF, tm.studyX, tm.titleY+4*stageBlocSize-9, gold)
 	text.Draw(screen, scoreText, tm.titleFF, tm.scoreX, tm.titleY, gold)
 	text.Draw(screen, strconv.Itoa(score), tm.titleFF, tm.scoreX, tm.titleY+2*stageBlocSize-9, gold)
 }

@@ -13,6 +13,7 @@ const (
 	right
 	down
 	left
+	sKey
 )
 
 type elem int
