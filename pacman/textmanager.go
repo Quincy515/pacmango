@@ -10,6 +10,7 @@ import (
 	"github.com/hajimehoshi/ebiten"
 	"github.com/hajimehoshi/ebiten/text"
 	"github.com/kgosse/pacmanresources/fonts"
+	pacimages "github.com/kgosse/pacmanresources/images"
 	"golang.org/x/image/font"
 )
 
@@ -41,6 +42,8 @@ type textManager struct {
 	titleY               int
 	count                int
 	entrance             bool
+	gameOverImage        *ebiten.Image
+	gameOverAlpha        float64
 }
 
 func newTextManager(w, h int) *textManager {
@@ -49,6 +52,8 @@ func newTextManager(w, h int) *textManager {
 	if err != nil {
 		log.Fatal(err)
 	}
+	tm.gameOverImage = loadImage(pacimages.GameOver_png[:])
+
 	tm.titleFF = truetype.NewFace(tt, &truetype.Options{
 		Size: 24,
 	})
@@ -68,11 +73,28 @@ func newTextManager(w, h int) *textManager {
 	return tm
 }
 
+func (tm *textManager) reinit() {
+	tm.gameOverAlpha = 0
+}
+
 func (tm *textManager) entranceAnim(b bool) {
 	if b {
 		tm.count = 0
 	}
 	tm.entrance = b
+}
+
+func (tm *textManager) showGameOverImage(screen *ebiten.Image) {
+	tm.gameOverAlpha += 0.01
+	if tm.gameOverAlpha > 1 {
+		tm.gameOverAlpha = 1
+	}
+	x := float64(3 * stageBlocSize)
+	y := float64(4 * stageBlocSize)
+	op := &ebiten.DrawImageOptions{}
+	op.GeoM.Translate(x, y)
+	op.ColorM.Scale(1, 1, 1, tm.gameOverAlpha)
+	screen.DrawImage(tm.gameOverImage, op)
 }
 
 func (tm *textManager) showEntranceAnim(screen *ebiten.Image) {
@@ -92,7 +114,7 @@ func (tm *textManager) showEntranceAnim(screen *ebiten.Image) {
 	} else if tm.count <= 180 {
 		text.Draw(screen, one, tm.entranceFF, 9*stageBlocSize, 5*stageBlocSize, gold)
 	} else if tm.count <= 240 {
-		text.Draw(screen, goText, tm.entranceFF, 9*stageBlocSize, 5*stageBlocSize, gold)
+		text.Draw(screen, goText, tm.entranceFF, 7*stageBlocSize, 5*stageBlocSize, gold)
 	} else {
 		tm.entranceAnim(false)
 	}
@@ -113,6 +135,11 @@ func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.
 	text.Draw(screen, studyText, tm.titleFF, tm.studyX, tm.titleY+4*stageBlocSize-9, gold)
 	text.Draw(screen, scoreText, tm.titleFF, tm.scoreX, tm.titleY, gold)
 	text.Draw(screen, strconv.Itoa(score), tm.titleFF, tm.scoreX, tm.titleY+2*stageBlocSize-9, gold)
+
+	if lives == 0 {
+		tm.showGameOverImage(screen)
+	}
+
 	tm.showEntranceAnim(screen)
 }
 

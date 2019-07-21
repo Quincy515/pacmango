@@ -17,6 +17,7 @@ type player struct {
 	score                  int
 	ctExplosion            int
 	pm                     *particleManager
+	lost                   bool
 }
 
 func newPlayer(y, x int) *player {
@@ -41,6 +42,9 @@ func (p *player) image() *ebiten.Image {
 func (p *player) draw(screen *ebiten.Image) {
 	if p.isExploding() {
 		p.pm.draw(screen)
+		return
+	}
+	if p.lost {
 		return
 	}
 	x := float64(p.curPos.x*stageBlocSize + p.stepsLength.x)
@@ -189,4 +193,11 @@ func (p *player) isExploding() bool {
 func (p *player) reinit() {
 	p.reset()
 	p.score = 0
+	p.lost = false
+}
+
+func (p *player) gameover() {
+	p.lost = true
+	p.curPos.x = 0
+	p.curPos.y = 0
 }

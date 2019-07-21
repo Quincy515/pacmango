@@ -137,7 +137,9 @@ func (s *scene) loadImages() {
 func (s *scene) move(in input) {
 	s.explosionManager.move()
 	s.ghostManager.move(s.matrix, s.player.curPos)
-	s.player.move(s.matrix, in, s.afterPacmanExplosion)
+	if s.lives > 0 {
+		s.player.move(s.matrix, in, s.afterPacmanExplosion)
+	}
 }
 
 func (s *scene) detectCollision() {
@@ -204,12 +206,16 @@ func (s *scene) afterPacmanExplosion() {
 	x, y := s.textManager.livesPos(s.lives)
 	s.explosionManager.addExplosion(pacimages.PacParticle_png, x-16, y+16)
 	s.lives--
+	if s.lives == 0 {
+		s.player.gameover()
+	}
 }
 
 func (s *scene) reinit() {
 	s.dotManager.reinit(s.matrix)
 	s.bigDotManager.reinit(s.matrix)
 	s.player.reinit()
+	s.textManager.reinit()
 	s.lives = s.stage.maxLives - 1
 	s.ghostManager.reinit()
 	s.explosionManager.reinit()
