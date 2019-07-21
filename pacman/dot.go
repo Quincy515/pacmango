@@ -26,6 +26,9 @@ func (d *dotManager) loadImage() {
 }
 
 func (d *dotManager) add(y, x int) {
+	//if d.dots.Len() == 5 {
+	//	return
+	//}
 	d.dots.PushBack(pos{y, x})
 }
 
@@ -68,4 +71,11 @@ func (d *dotManager) reinit(m [][]elem) {
 		d.dots.PushBack(d.gc.Remove(cur))
 		m[v.y][v.x] = dotElem
 	}
+}
+
+func (d *dotManager) empty() bool {
+	if d.dots.Len() == 0 {
+		return true
+	}
+	return false
 }

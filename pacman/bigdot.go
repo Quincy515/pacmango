@@ -77,3 +77,10 @@ func (b *bigDotManager) reinit(m [][]elem) {
 		m[v.y][v.x] = bigDotElem
 	}
 }
+
+func (b *bigDotManager) empty() bool {
+	if b.dots.Len() == 0 {
+		return true
+	}
+	return false
+}

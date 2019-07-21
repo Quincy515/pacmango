@@ -20,6 +20,7 @@ type scene struct {
 	pointManager     *pointManager
 	explosionManager *explosionManager
 	sounds           *sounds
+	over             bool
 }
 
 func newScene(st *stage) *scene {
@@ -136,7 +137,9 @@ func (s *scene) loadImages() {
 
 func (s *scene) move(in input) {
 	s.explosionManager.move()
-	s.ghostManager.move(s.matrix, s.player.curPos)
+	if !s.over {
+		s.ghostManager.move(s.matrix, s.player.curPos)
+	}
 	if s.lives > 0 {
 		s.player.move(s.matrix, in, s.afterPacmanExplosion)
 	}
@@ -159,12 +162,19 @@ func (s *scene) afterPacmanDotCollision() {
 	s.player.score += 10
 	s.dotManager.delete(s.player.curPos)
 	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
+	if !s.over && s.won() {
+		s.victory()
+	}
 }
 
 func (s *scene) afterPacmanBigDotCollision() {
 	s.player.score += 50
 	s.bigDotManager.delete(s.player.curPos)
 	s.matrix[s.player.curPos.y][s.player.curPos.x] = empty
+	if !s.over && s.won() {
+		s.victory()
+		return
+	}
 	s.ghostManager.makeVulnerable()
 	s.sounds.playWail()
 }
@@ -202,7 +212,7 @@ func (s *scene) afterPacmanGhostCollision(vulnerable bool, y, x float64) {
 }
 
 func (s *scene) afterPacmanExplosion() {
-	s.ghostManager.reset(s.explosionManager)
+	s.ghostManager.reset(s.explosionManager, false)
 	x, y := s.textManager.livesPos(s.lives)
 	s.explosionManager.addExplosion(pacimages.PacParticle_png, x-16, y+16)
 	s.lives--
@@ -217,11 +227,26 @@ func (s *scene) reinit() {
 	s.player.reinit()
 	s.textManager.reinit()
 	s.lives = s.stage.maxLives - 1
+	s.over = false
 	s.ghostManager.reinit()
 	s.explosionManager.reinit()
 	s.textManager.entranceAnim(true)
 	s.sounds.pause()
 	s.sounds.playEntrance()
+}
+
+func (s *scene) won() bool {
+	if s.dotManager.empty() && s.bigDotManager.empty() {
+		return true
+	}
+	return false
+}
+
+func (s *scene) victory() {
+	s.over = true
+	s.ghostManager.reset(s.explosionManager, true)
+	s.sounds.pause()
+	s.sounds.playApplause()
 }
 
 func (s *scene) update(screen *ebiten.Image, in input) error {
@@ -246,7 +271,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	s.ghostManager.draw(screen)
 	s.pointManager.draw(screen)
 	s.explosionManager.draw(screen)
-	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1], s.sounds.status())
-	s.sounds.playSiren()
+	s.textManager.draw(screen, s.player.score, s.lives, s.player.images[1], s.won(), s.sounds.status())
+	s.sounds.playSiren(s.won())
 	return nil
 }

@@ -19,6 +19,7 @@ type ghost struct {
 	ctVulnerable           int
 	vulnerableMove         bool
 	eaten                  bool
+	lost                   bool
 }
 
 func init() {
@@ -69,6 +70,9 @@ func (g *ghost) isVulnerable() bool {
 }
 
 func (g *ghost) draw(screen *ebiten.Image, imgs []*ebiten.Image) {
+	if g.lost {
+		return
+	}
 	x := float64(g.curPos.x * stageBlocSize)
 	y := float64(g.curPos.y * stageBlocSize)
 	op := &ebiten.DrawImageOptions{}
@@ -284,6 +288,13 @@ func (g *ghost) reset() {
 
 func (g *ghost) reinit() {
 	g.reset()
+	g.lost = false
 	g.speed = 4
 	g.endVulnerability()
+}
+
+func (g *ghost) gameover() {
+	p := pos{0, 0}
+	g.prvPos, g.curPos, g.nxtPos = p, p, p
+	g.lost = true
 }

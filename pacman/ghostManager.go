@@ -70,12 +70,16 @@ func (gm *ghostManager) detectCollision(pY, pX float64, cb func(bool, float64, f
 	}
 }
 
-func (gm *ghostManager) reset(em *explosionManager) {
+func (gm *ghostManager) reset(em *explosionManager, over bool) {
 	for i := 0; i < len(gm.ghosts); i++ {
 		g := gm.ghosts[i]
 		y, x := g.screenPos()
 		em.addExplosion(pacimages.PacParticle_png, x, y)
-		g.reset()
+		if over {
+			g.gameover()
+		} else {
+			g.reset()
+		}
 	}
 }
 

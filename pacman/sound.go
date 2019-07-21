@@ -15,6 +15,7 @@ type sounds struct {
 	eatGhostPlayer *audio.Player
 	deathPlayer    *audio.Player
 	entrancePlayer *audio.Player
+	applausePlayer *audio.Player
 	on             bool
 }
 
@@ -37,6 +38,7 @@ func newSounds() *sounds {
 	s.eatGhostPlayer = s.newPlayer(pacsounds.EatGhost_wav)
 	s.deathPlayer = s.newPlayer(pacsounds.Death_wav)
 	s.entrancePlayer = s.newPlayer(pacsounds.Beginning_wav)
+	s.applausePlayer = s.newPlayer(pacsounds.Applause_wav)
 
 	s.sirenPlayer.SetVolume(0.2)
 	s.eatFruitPlayer.SetVolume(0.1)
@@ -64,6 +66,7 @@ func (s *sounds) toggleSound() {
 		s.eatGhostPlayer.SetVolume(0)
 		s.deathPlayer.SetVolume(0)
 		s.entrancePlayer.SetVolume(0)
+		s.applausePlayer.SetVolume(0)
 	} else {
 		s.on = true
 		s.sirenPlayer.SetVolume(0.2)
@@ -72,6 +75,7 @@ func (s *sounds) toggleSound() {
 		s.eatGhostPlayer.SetVolume(0.05)
 		s.deathPlayer.SetVolume(0.05)
 		s.entrancePlayer.SetVolume(0.2)
+		s.applausePlayer.SetVolume(0.2)
 	}
 }
 
@@ -102,8 +106,8 @@ func (s *sounds) status() string {
 	return r
 }
 
-func (s *sounds) playSiren() {
-	if s.canPlaySiren() && !s.sirenPlayer.IsPlaying() {
+func (s *sounds) playSiren(won bool) {
+	if !won && s.canPlaySiren() && !s.sirenPlayer.IsPlaying() {
 		s.sirenPlayer.Rewind()
 		s.sirenPlayer.Play()
 	}
@@ -114,6 +118,7 @@ func (s *sounds) canPlaySiren() bool {
 		s.wailPlayer,
 		s.deathPlayer,
 		s.entrancePlayer,
+		s.applausePlayer,
 	}
 
 	for _, v := range d {
@@ -159,6 +164,8 @@ func (s *sounds) pause() {
 		s.sirenPlayer,
 		s.eatGhostPlayer,
 		s.eatFruitPlayer,
+		s.entrancePlayer,
+		s.applausePlayer,
 	}
 
 	for _, v := range d {
@@ -170,4 +177,13 @@ func (s *sounds) playEntrance() {
 	s.sirenPlayer.Pause()
 	s.entrancePlayer.Rewind()
 	s.entrancePlayer.Play()
+}
+
+func (s *sounds) playApplause() {
+	s.sirenPlayer.Pause()
+	if s.applausePlayer.IsPlaying() {
+		return
+	}
+	s.applausePlayer.Rewind()
+	s.applausePlayer.Play()
 }
