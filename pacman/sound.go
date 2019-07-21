@@ -14,6 +14,7 @@ type sounds struct {
 	wailPlayer     *audio.Player
 	eatGhostPlayer *audio.Player
 	deathPlayer    *audio.Player
+	entrancePlayer *audio.Player
 	on             bool
 }
 
@@ -35,6 +36,7 @@ func newSounds() *sounds {
 	s.wailPlayer = s.newPlayer(pacsounds.Wail_wav)
 	s.eatGhostPlayer = s.newPlayer(pacsounds.EatGhost_wav)
 	s.deathPlayer = s.newPlayer(pacsounds.Death_wav)
+	s.entrancePlayer = s.newPlayer(pacsounds.Beginning_wav)
 
 	s.sirenPlayer.SetVolume(0.2)
 	s.eatFruitPlayer.SetVolume(0.1)
@@ -61,6 +63,7 @@ func (s *sounds) toggleSound() {
 		s.wailPlayer.SetVolume(0)
 		s.eatGhostPlayer.SetVolume(0)
 		s.deathPlayer.SetVolume(0)
+		s.entrancePlayer.SetVolume(0)
 	} else {
 		s.on = true
 		s.sirenPlayer.SetVolume(0.2)
@@ -68,6 +71,7 @@ func (s *sounds) toggleSound() {
 		s.wailPlayer.SetVolume(0.05)
 		s.eatGhostPlayer.SetVolume(0.05)
 		s.deathPlayer.SetVolume(0.05)
+		s.entrancePlayer.SetVolume(0.2)
 	}
 }
 
@@ -109,6 +113,7 @@ func (s *sounds) canPlaySiren() bool {
 	d := [...]*audio.Player{
 		s.wailPlayer,
 		s.deathPlayer,
+		s.entrancePlayer,
 	}
 
 	for _, v := range d {
@@ -159,4 +164,10 @@ func (s *sounds) pause() {
 	for _, v := range d {
 		v.Pause()
 	}
+}
+
+func (s *sounds) playEntrance() {
+	s.sirenPlayer.Pause()
+	s.entrancePlayer.Rewind()
+	s.entrancePlayer.Play()
 }

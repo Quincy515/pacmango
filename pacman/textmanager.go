@@ -35,9 +35,12 @@ var (
 type textManager struct {
 	titleFF              font.Face
 	bodyFF               font.Face
+	entranceFF           font.Face
 	keyX, livesX, scoreX int
 	studyX               int
 	titleY               int
+	count                int
+	entrance             bool
 }
 
 func newTextManager(w, h int) *textManager {
@@ -52,6 +55,9 @@ func newTextManager(w, h int) *textManager {
 	tm.bodyFF = truetype.NewFace(tt, &truetype.Options{
 		Size: 14,
 	})
+	tm.entranceFF = truetype.NewFace(tt, &truetype.Options{
+		Size: 70,
+	})
 
 	tm.scoreX = w - 5*stageBlocSize
 	tm.keyX = 20
@@ -60,6 +66,36 @@ func newTextManager(w, h int) *textManager {
 	tm.titleY = h + 25
 
 	return tm
+}
+
+func (tm *textManager) entranceAnim(b bool) {
+	if b {
+		tm.count = 0
+	}
+	tm.entrance = b
+}
+
+func (tm *textManager) showEntranceAnim(screen *ebiten.Image) {
+	if !tm.entrance {
+		return
+	}
+	tm.count++
+	three := "3"
+	two := "2"
+	one := "1"
+	goText := "GO!"
+
+	if tm.count <= 60 {
+		text.Draw(screen, three, tm.entranceFF, 9*stageBlocSize, 5*stageBlocSize, gold)
+	} else if tm.count <= 120 {
+		text.Draw(screen, two, tm.entranceFF, 9*stageBlocSize, 5*stageBlocSize, gold)
+	} else if tm.count <= 180 {
+		text.Draw(screen, one, tm.entranceFF, 9*stageBlocSize, 5*stageBlocSize, gold)
+	} else if tm.count <= 240 {
+		text.Draw(screen, goText, tm.entranceFF, 9*stageBlocSize, 5*stageBlocSize, gold)
+	} else {
+		tm.entranceAnim(false)
+	}
 }
 
 func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.Image, status string) {
@@ -77,6 +113,7 @@ func (tm *textManager) draw(screen *ebiten.Image, score, lives int, pac *ebiten.
 	text.Draw(screen, studyText, tm.titleFF, tm.studyX, tm.titleY+4*stageBlocSize-9, gold)
 	text.Draw(screen, scoreText, tm.titleFF, tm.scoreX, tm.titleY, gold)
 	text.Draw(screen, strconv.Itoa(score), tm.titleFF, tm.scoreX, tm.titleY+2*stageBlocSize-9, gold)
+	tm.showEntranceAnim(screen)
 }
 
 func (tm *textManager) livesPos(l int) (x, y float64) {

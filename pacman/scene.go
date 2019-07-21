@@ -42,6 +42,8 @@ func newScene(st *stage) *scene {
 	s.loadImages()
 	s.createStage()
 	s.buildWallSurface()
+	s.textManager.entranceAnim(true)
+	s.sounds.playEntrance()
 	return s
 }
 
@@ -211,7 +213,9 @@ func (s *scene) reinit() {
 	s.lives = s.stage.maxLives - 1
 	s.ghostManager.reinit()
 	s.explosionManager.reinit()
+	s.textManager.entranceAnim(true)
 	s.sounds.pause()
+	s.sounds.playEntrance()
 }
 
 func (s *scene) update(screen *ebiten.Image, in input) error {
@@ -223,7 +227,7 @@ func (s *scene) update(screen *ebiten.Image, in input) error {
 	}
 	if in == rKey {
 		s.reinit()
-	} else {
+	} else if !s.textManager.entrance {
 		s.move(in)
 		s.detectCollision()
 	}
